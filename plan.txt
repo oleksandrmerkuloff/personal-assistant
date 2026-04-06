@@ -1,0 +1,12 @@
+Idea - create personal assistant app for myself and other
+
+Parts:
+	Notes
+	Goals
+	Tasks
+	Calendar
+	Notification for notes, tasks or other thing
+	Pomodoro
+	Spotify or lofi integration
+	maybe email integration
+	Global user stats: goals, tasks, pomodoro, etc.
