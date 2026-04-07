@@ -1,17 +1,19 @@
 import os
 
-from db.models import PasswordRecord
 
 BASE_DIR = os.getcwd()
 STORAGE_PATH = BASE_DIR + '/storage/'
 
 
-def main():
+def create_storage():
     if not os.path.isdir(STORAGE_PATH):
         os.mkdir(STORAGE_PATH)
-    
-    test_record = PasswordRecord(name='name', password='test', salt='test', url='google.com')
-    test_record.save(file_path=STORAGE_PATH)
+
+
+def main():
+    state = True
+    while state:
+        pass
 
 
 if __name__ == '__main__':
