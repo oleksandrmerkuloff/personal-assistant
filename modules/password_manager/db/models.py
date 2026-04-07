@@ -7,11 +7,10 @@ from typing import Optional, Any
 
 
 @dataclass
-class PasswordRecord:
+class PasswordModel:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
-    password: str = ""
-    salt: str = ""
+    encrypted_password: str = ""
     url: Optional[str] = None
     created_at: datetime = field(default_factory=datetime.now)
 

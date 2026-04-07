@@ -1,19 +1,22 @@
-import os
+from dotenv import load_dotenv
+
+from settings import create_storage
+from manager import add_password
 
 
-BASE_DIR = os.getcwd()
-STORAGE_PATH = BASE_DIR + '/storage/'
-
-
-def create_storage():
-    if not os.path.isdir(STORAGE_PATH):
-        os.mkdir(STORAGE_PATH)
+load_dotenv()
 
 
 def main():
+    create_storage()
+
     state = True
     while state:
-        pass
+        command = input('Add command: ').strip()
+        if command == 'add':
+            add_password()
+        elif command == 'exit':
+            state = False
 
 
 if __name__ == '__main__':
