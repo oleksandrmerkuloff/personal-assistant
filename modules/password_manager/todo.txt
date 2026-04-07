@@ -17,13 +17,3 @@ support functions
 temporary optional:
 For first version I'll use csv for user record store
 For passwords store I'll use json
-
-
-change os to pathlib
-
-
-Storage:
-    Primary:
-        users.csv - temporary storage for users -> later I'll change it to postgresql
-        passwords.json - temporary storage for passwords -> Later I'll change it to sqlite or postgresql
-        I'll use sqlite if passwords 
