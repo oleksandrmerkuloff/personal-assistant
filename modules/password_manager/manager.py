@@ -24,15 +24,22 @@ def add_password():
     return new_password.save(STORAGE_PATH)
 
 
-def get_password():
-    pass
+def get_password() -> None:
+    name = input('If you searching by name write it here or skip for an id search: ').strip()
+    id = input('Write an id here or keep it empty: ').strip()
+    if name:
+        password = PasswordModel.get_single_record(file_path=STORAGE_PATH, name=name)
+    else:
+        password = PasswordModel.get_single_record(file_path=STORAGE_PATH, id=id)
+    for key, value in password.items():
+        print(f'{key}: {value}')
 
 
 def get_passwords_list() -> list[Any]|str:
     name = input('Write part or full name for interesting passwords for you: ').strip()
     if not name:
         return 'You can\'t use an empty value for name!'
-    return PasswordModel.get_records(file_path=STORAGE_PATH, name=name) 
+    return PasswordModel.get_records_list(file_path=STORAGE_PATH, name=name) 
 
 
 def delete_password() -> None:

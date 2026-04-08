@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 
 from settings import create_storage
-from manager import add_password, get_passwords_list, delete_password
+from manager import add_password, get_passwords_list, delete_password, get_password
 
 
 load_dotenv()
@@ -12,9 +12,11 @@ def main():
 
     state = True
     while state:
-        command = input('Write a command: ').strip()
+        command = input('Write a command: ').strip().lower()
         if command == 'add':
             add_password()
+        elif command == 'single':
+            get_password()
         elif command == 'list':
             passwords = get_passwords_list()
             for password in passwords:

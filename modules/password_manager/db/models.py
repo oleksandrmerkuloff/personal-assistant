@@ -15,11 +15,17 @@ class PasswordModel:
     created_at: dt = field(default_factory=dt.now)
 
     @classmethod
-    def get_records(
+    def get_single_record(cls, file_path: str, name: Optional[str] = None, id: Optional[str] = None) -> Optional[dict['str', Any]]:
+        if name:
+            return cls.get_records_list(file_path=file_path, name=name)[0]
+        index = cls.get_password_index(file_path=file_path, id=id)
+        return cls.get_records_list(file_path=file_path)[index]
+
+    @classmethod
+    def get_records_list(
         cls,
         file_path: str,
-        name: Optional[str] = None,
-        id: Optional[str] = None
+        name: Optional[str] = None
     ) -> list[Any]:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
@@ -36,7 +42,7 @@ class PasswordModel:
     
     @classmethod
     def get_password_index(cls, file_path: str, id: str) -> Optional[int]:
-        records = cls.get_records(file_path=file_path)
+        records = cls.get_records_list(file_path=file_path)
         for index, record in enumerate(records):
             if record['id'] == id:
                 return index
@@ -45,7 +51,7 @@ class PasswordModel:
     @classmethod
     def delete(cls, file_path: str, id: str) -> bool:
         record_index = cls.get_password_index(file_path, id)
-        records = cls.get_records(file_path=file_path)
+        records = cls.get_records_list(file_path=file_path)
         if record_index is None:
             return False
         try:
@@ -66,9 +72,8 @@ class PasswordModel:
         password_data = asdict(self)
         password_data["created_at"] = dt.strftime(password_data["created_at"], '%H:%M %d/%m/%y')
 
-        records = PasswordModel.get_records(file_path=file_path)
+        records = PasswordModel.get_records_list(file_path=file_path)
 
         records.append(password_data)
 
         self.write_to_file(file_path, records)
-    
