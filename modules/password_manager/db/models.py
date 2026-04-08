@@ -2,7 +2,7 @@ import json
 import uuid
 from json.decoder import JSONDecodeError
 from dataclasses import dataclass, asdict, field
-from datetime import datetime
+from datetime import datetime as dt
 from typing import Optional, Any
 
 
@@ -12,13 +12,14 @@ class PasswordModel:
     name: str = ""
     encrypted_password: str = ""
     url: Optional[str] = None
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: dt = field(default_factory=dt.now)
 
+    @classmethod
     def get_records(
-        self,
+        cls,
         file_path: str,
         name: Optional[str] = None,
-        demonstrate: Optional[bool] = False,
+        id: Optional[str] = None
     ) -> list[Any]:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
@@ -26,27 +27,48 @@ class PasswordModel:
                 if isinstance(data, dict):
                     records = list(data.values())
                 else:
-                    records = data
-            if name:
-                records = [record for record in records if record["name"] == name]
+                    records = data 
+            if name and name.lower() != 'all':
+                records = [record for record in records if name.lower() in record['name'].lower()]
         except (FileNotFoundError, JSONDecodeError):
             records = []
-        if demonstrate:
-            for record in records:
-                for key, value in record.items():
-                    print(f"{key}: {value}")
         return records
+    
+    @classmethod
+    def get_password_index(cls, file_path: str, id: str) -> Optional[int]:
+        records = cls.get_records(file_path=file_path)
+        for index, record in enumerate(records):
+            if record['id'] == id:
+                return index
+        return None
+
+    @classmethod
+    def delete(cls, file_path: str, id: str) -> bool:
+        record_index = cls.get_password_index(file_path, id)
+        records = cls.get_records(file_path=file_path)
+        if record_index is None:
+            return False
+        try:
+            del records[record_index]
+            cls.write_to_file(file_path, records)
+        except (FileNotFoundError, IndexError):
+            return False
+        return True
+
+    @staticmethod
+    def write_to_file(file_path: str, records: list[dict[str, Any]]) -> None:
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(records, file, indent=2, ensure_ascii=False)
 
     def save(self, file_path) -> None:
-        """Save new password record to the JSON file"""
-        file_path = file_path + "passwords.json"
+        """Save new password record to the JSON file""" 
 
         password_data = asdict(self)
-        password_data["created_at"] = password_data["created_at"].isoformat()
+        password_data["created_at"] = dt.strftime(password_data["created_at"], '%H:%M %d/%m/%y')
 
-        records = self.get_records(file_path)
+        records = PasswordModel.get_records(file_path=file_path)
 
         records.append(password_data)
 
-        with open(file_path, "w", encoding="utf-8") as file:
-            json.dump(records, file, indent=2, ensure_ascii=False)
+        self.write_to_file(file_path, records)
+    

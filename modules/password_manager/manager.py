@@ -1,3 +1,5 @@
+from typing import Any
+
 from db.models import PasswordModel
 from crypto import encrypt_password
 from settings import STORAGE_PATH
@@ -22,14 +24,20 @@ def add_password():
     return new_password.save(STORAGE_PATH)
 
 
-
 def get_password():
     pass
 
 
-def get_passwords_list():
-    pass
+def get_passwords_list() -> list[Any]|str:
+    name = input('Write part or full name for interesting passwords for you: ').strip()
+    if not name:
+        return 'You can\'t use an empty value for name!'
+    return PasswordModel.get_records(file_path=STORAGE_PATH, name=name) 
 
 
-def delete_password():
-    pass
+def delete_password() -> None:
+    password_id = input('Write password id for delete: ').strip()
+    if PasswordModel.delete(file_path=STORAGE_PATH, id=password_id):
+        print('Success!')
+    else:
+        print('Try again!')
