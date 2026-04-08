@@ -10,7 +10,7 @@ from typing import Optional, Any
 class PasswordModel:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
-    encrypted_password: str = ""
+    password: str = ""
     url: Optional[str] = None
     created_at: dt = field(default_factory=dt.now)
 

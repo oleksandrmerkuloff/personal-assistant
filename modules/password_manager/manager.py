@@ -1,7 +1,7 @@
 from typing import Any
 
 from db.models import PasswordModel
-from crypto import encrypt_password
+from crypto import encrypt_password, decrypt_password
 from settings import STORAGE_PATH
 
 
@@ -18,7 +18,7 @@ def add_password():
 
     new_password = PasswordModel(
         name=name,
-        encrypted_password=encrypted_password,
+        password=encrypted_password,
         url=url
         )
     return new_password.save(STORAGE_PATH)
@@ -32,13 +32,15 @@ def get_password() -> None:
     else:
         password = PasswordModel.get_single_record(file_path=STORAGE_PATH, id=id)
     for key, value in password.items():
+        if key == 'password':
+            value = decrypt_password(value)
         print(f'{key}: {value}')
 
 
 def get_passwords_list() -> list[Any]|str:
     name = input('Write part or full name for interesting passwords for you: ').strip()
     if not name:
-        return 'You can\'t use an empty value for name!'
+        raise ValueError('You can\'t use an empty value for name!')
     return PasswordModel.get_records_list(file_path=STORAGE_PATH, name=name) 
 
 

@@ -15,7 +15,7 @@ def encrypt_password(password: str) -> str:
 def decrypt_password(encrypted_password: str) -> str:
     key = get_master_key()
     f = Fernet(key)
-    return f.decrypt(encrypt_password.encode('utf-8')).decode('utf-8')
+    return f.decrypt(encrypted_password.encode('utf-8')).decode('utf-8')
 
 
 def get_master_key() -> bytes:
