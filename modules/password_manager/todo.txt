@@ -17,3 +17,6 @@ support functions
 temporary optional:
 For first version I'll use csv for user record store
 For passwords store I'll use json
+
+
+Add password to user which password manager will request
