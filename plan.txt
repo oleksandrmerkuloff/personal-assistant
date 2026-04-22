@@ -10,3 +10,4 @@ Parts:
 	Spotify or lofi integration
 	maybe email integration
 	Global user stats: goals, tasks, pomodoro, etc.
+	Password Manager
