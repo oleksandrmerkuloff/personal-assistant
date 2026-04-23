@@ -15,7 +15,7 @@ class TimestampMixin:
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
-class PasswordRecord(Base, TimestampMixin):
+class PasswordModel(Base, TimestampMixin):
     __tablename__ = "passwords"
 
     id: Mapped[str] = mapped_column(String(36), default=lambda: str(uuid.uuid4()), primary_key=True)
@@ -23,6 +23,5 @@ class PasswordRecord(Base, TimestampMixin):
     username: Mapped[str] = mapped_column(String(75), nullable=False)
     password: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     url: Mapped[Optional[str]] = mapped_column(Text)
-    # crypto metadata #! TO CHANGE
     salt: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     nonce: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)

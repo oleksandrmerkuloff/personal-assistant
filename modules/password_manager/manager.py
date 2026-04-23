@@ -1,52 +1,43 @@
-from typing import Any
+from uuid import UUID
+from typing import Optional, Sequence
 
-from db.models import PasswordModel
-from crypto import encrypt_password, decrypt_password
-from settings import STORAGE_PATH
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 
-
-def add_password():
-    name = input('Create unique name for the new record: ').strip()
-    password = input('Write a password for the new record: ').strip()
-    if not password or not name:
-        print('Found empty error!')
-        print('"Password" and "Name" are required! Try again please!')
-        return None
-    url = input('Paste an url for the new record: ').strip()
-
-    encrypted_password = encrypt_password(password)
-
-    new_password = PasswordModel(
-        name=name,
-        password=encrypted_password,
-        url=url
-        )
-    return new_password.save(STORAGE_PATH)
+from .settings import Session
+from .models import PasswordModel
 
 
-def get_password() -> None:
-    name = input('If you searching by name write it here or skip for an id search: ').strip()
-    id = input('Write an id here or keep it empty: ').strip()
-    if name:
-        password = PasswordModel.get_single_record(file_path=STORAGE_PATH, name=name)
-    else:
-        password = PasswordModel.get_single_record(file_path=STORAGE_PATH, id=id)
-    for key, value in password.items():
-        if key == 'password':
-            value = decrypt_password(value)
-        print(f'{key}: {value}')
+def create_password():
+    with Session() as session, session.begin():
+        pass
 
 
-def get_passwords_list() -> list[Any]|str:
-    name = input('Write part or full name for interesting passwords for you: ').strip()
-    if not name:
-        raise ValueError('You can\'t use an empty value for name!')
-    return PasswordModel.get_records_list(file_path=STORAGE_PATH, name=name) 
+def get_password(password_id: UUID) -> PasswordModel | None:
+    with Session() as session:
+        return session.get(PasswordModel, password_id)
 
 
-def delete_password() -> None:
-    password_id = input('Write password id for delete: ').strip()
-    if PasswordModel.delete(file_path=STORAGE_PATH, id=password_id):
-        print('Success!')
-    else:
-        print('Try again!')
+def get_passwords_list(
+    ordering_by: str = "name", name: Optional[str] = None
+) -> Sequence[PasswordModel]:
+    with Session() as session:
+        if not name:
+            return session.scalars(select(PasswordModel).order_by(ordering_by)).all()
+        return session.scalars(
+            select(PasswordModel)
+            .where(PasswordModel.name.icontains(name))
+            .order_by(ordering_by)
+        ).all()
+
+
+def update_password():
+    pass
+
+
+def delete_password(password_id: UUID) -> None:
+    with Session() as session, session.begin():
+        record = get_password(password_id)
+        if not record:
+            raise NoResultFound("Password not found")
+        session.delete(record)
